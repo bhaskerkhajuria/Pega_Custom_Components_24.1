@@ -1,0 +1,73 @@
+{
+  "name": "Pega_Extensions_SearchLayout",
+  "label": "Search Layout",
+  "description": "Two-pane search layout: configurable search criteria pane (left/top) and results pane (right/bottom). Supports resizable vertical split and collapsible horizontal stacking.",
+  "version": "1.0.0",
+  "library": "Pega_Extensions",
+  "type": "Layout",
+  "subtype": "Page",
+  "allowedInPortal": ["portal", "mash-up"],
+  "slots": {
+    "searchFieldPane": {
+      "label": "Search Field Pane",
+      "description": "Drop fields, views, and widgets that make up the search criteria form.",
+      "allowedTypes": ["Field", "View", "Widget"],
+      "isRepeating": true,
+      "required": false
+    },
+    "resultsPane": {
+      "label": "Results Pane",
+      "description": "Drop a view that renders the search results (e.g. a List view or Report).",
+      "allowedTypes": ["View"],
+      "isRepeating": false,
+      "required": false
+    }
+  },
+  "properties": [
+    {
+      "name": "searchPaneTitle",
+      "label": "Search Pane Title",
+      "description": "Header text shown above the search criteria fields.",
+      "type": "Text",
+      "defaultValue": "Search Criteria"
+    },
+    {
+      "name": "resultsPaneTitle",
+      "label": "Results Pane Title",
+      "description": "Header text shown above the results view.",
+      "type": "Text",
+      "defaultValue": "Search Results"
+    },
+    {
+      "name": "searchButtonLabel",
+      "label": "Search Button Label",
+      "description": "Label for the search / submit button.",
+      "type": "Text",
+      "defaultValue": "Search"
+    },
+    {
+      "name": "resetButtonLabel",
+      "label": "Reset Button Label",
+      "description": "Label for the reset / clear button.",
+      "type": "Text",
+      "defaultValue": "Reset"
+    },
+    {
+      "name": "layoutDirection",
+      "label": "Layout Direction",
+      "description": "Vertical: side-by-side split (resizable, 30/70 default). Horizontal: stacked top-to-bottom (collapsible, content-height).",
+      "type": "Text",
+      "defaultValue": "vertical",
+      "enum": [
+        {
+          "key": "vertical",
+          "value": "Vertical (side-by-side)"
+        },
+        {
+          "key": "horizontal",
+          "value": "Horizontal (stacked)"
+        }
+      ]
+    }
+  ]
+}
