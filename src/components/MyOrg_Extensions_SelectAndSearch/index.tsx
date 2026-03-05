@@ -21,6 +21,8 @@ type PegaExtensionsSearchLayoutProps = {
   searchButtonLabel?: string;
   resetButtonLabel?: string;
   layoutDirection?: 'vertical' | 'horizontal';
+  resultsPlaceholder?: string;
+  getPConnect: any;
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -34,6 +36,8 @@ export default function PegaExtensionsSearchLayout(
     searchButtonLabel = 'Search',
     resetButtonLabel = 'Reset',
     layoutDirection = 'vertical',
+    resultsPlaceholder = 'Enter search criteria and click Search.',
+    getPConnect,
     children
   } = props;
 
@@ -43,18 +47,18 @@ export default function PegaExtensionsSearchLayout(
   const searchFieldPaneChild = childArray[0] ?? null;
   const resultsPaneChild = childArray[1] ?? null;
 
-  // ── Resize state (vertical mode) ──
+  // ── Resize state (vertical mode) ──────────────────────────────────────
   const containerRef = useRef<HTMLDivElement>(null);
   const [splitPercent, setSplitPercent] = useState(30);
   const isDragging = useRef(false);
 
-  // ── Collapse state (horizontal mode) ──
+  // ── Collapse state (horizontal mode) ──────────────────────────────────
   const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [resultsCollapsed, setResultsCollapsed] = useState(false);
 
-  // ── Keys to force re-mount on reset/search ──
-  const [searchKey, setSearchKey] = useState(0);
-  const [resultsKey, setResultsKey] = useState(0);
+  // ── Results visibility — hidden until Search is clicked ───────────────
+  // Prevents results view from auto-refreshing on field change
+  const [searchTriggered, setSearchTriggered] = useState(false);
 
   // ── Resize handlers ───────────────────────────────────────────────────
 
@@ -105,18 +109,48 @@ export default function PegaExtensionsSearchLayout(
     [layoutDirection]
   );
 
-  // ── Actions ───────────────────────────────────────────────────────────
+  // ── Search ────────────────────────────────────────────────────────────
 
   const handleSearch = useCallback(() => {
-    setResultsKey(k => k + 1);
-  }, []);
+    // Show results pane and trigger a CASE_UPDATE refresh so the results
+    // view re-fetches with the current field values from the clipboard page
+    setSearchTriggered(true);
+    try {
+      const context = getPConnect().getContextName();
+      PCore.getRefreshManager().triggerRefreshForType('CASE_UPDATE', '', context);
+    } catch {
+      // no-op in Storybook
+    }
+  }, [getPConnect]);
+
+  // ── Reset ─────────────────────────────────────────────────────────────
 
   const handleReset = useCallback(() => {
-    setSearchKey(k => k + 1);
-    setResultsKey(k => k + 1);
-  }, []);
+    try {
+      const pConn = getPConnect();
+      const context = pConn.getContextName();
+      const pageRef = pConn.getPageReference();
 
-  // ── Collapse buttons for CardHeader actions ───────────────────────────
+      // Get all field metadata from the search pane's view and clear each value
+      const rawMeta = pConn.getRawMetadata?.() as any;
+      const searchFields: any[] = rawMeta?.config?.searchFieldPane ?? [];
+      searchFields.forEach((field: any) => {
+        if (field?.config?.value) {
+          pConn.getActionsApi().updateFieldValue(field.config.value, '', { context, pageReference: pageRef });
+        }
+      });
+
+      // Trigger refresh to update the UI with cleared values
+      PCore.getRefreshManager().triggerRefreshForType('PROP_CHANGE', pageRef, context);
+    } catch {
+      // no-op in Storybook
+    }
+
+    // Also hide results until Search is clicked again
+    setSearchTriggered(false);
+  }, [getPConnect]);
+
+  // ── Collapse buttons ──────────────────────────────────────────────────
 
   const searchCollapseAction = layoutDirection === 'horizontal' ? (
     <StyledCaretButton
@@ -174,7 +208,6 @@ export default function PegaExtensionsSearchLayout(
 
           {!searchCollapsed && (
             <CardContent
-              key={searchKey}
               id='search-pane-content'
               role='region'
               aria-labelledby='search-pane-heading'
@@ -219,7 +252,7 @@ export default function PegaExtensionsSearchLayout(
           />
         )}
 
-        {/* Results Pane */}
+        {/* Results Pane — only rendered after Search is clicked */}
         <Card
           style={{
             flex: layoutDirection === 'vertical' ? '1 1 auto' : undefined,
@@ -238,9 +271,8 @@ export default function PegaExtensionsSearchLayout(
             </h2>
           </CardHeader>
 
-          {!resultsCollapsed && (
+          {!resultsCollapsed && searchTriggered && (
             <CardContent
-              key={resultsKey}
               id='results-pane-content'
               role='region'
               aria-labelledby='results-pane-heading'
@@ -248,6 +280,14 @@ export default function PegaExtensionsSearchLayout(
               aria-atomic='false'
             >
               {resultsPaneChild}
+            </CardContent>
+          )}
+
+          {!resultsCollapsed && !searchTriggered && (
+            <CardContent>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '120px' }}>
+                <span style={{ color: '#888', fontSize: '0.875rem' }}>{resultsPlaceholder}</span>
+              </div>
             </CardContent>
           )}
         </Card>
