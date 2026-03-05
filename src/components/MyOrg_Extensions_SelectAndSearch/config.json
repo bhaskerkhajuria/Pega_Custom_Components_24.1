@@ -55,9 +55,9 @@
       "name": "layoutDirection",
       "label": "Layout Direction",
       "description": "Vertical: side-by-side split (resizable). Horizontal: stacked top-to-bottom (collapsible).",
-      "format": "PICKLIST",
+      "format": "SELECT",
       "defaultValue": "vertical",
-      "options": [
+      "source": [
         { "key": "vertical", "value": "Vertical (side-by-side)" },
         { "key": "horizontal", "value": "Horizontal (stacked)" }
       ]
