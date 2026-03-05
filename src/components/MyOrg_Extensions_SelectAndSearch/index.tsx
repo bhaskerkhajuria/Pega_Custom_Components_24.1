@@ -21,7 +21,6 @@ type PegaExtensionsSearchLayoutProps = {
   searchButtonLabel?: string;
   resetButtonLabel?: string;
   layoutDirection?: 'vertical' | 'horizontal';
-  getPConnect: any;
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
