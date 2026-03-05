@@ -1,5 +1,5 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
-import type { KeyboardEvent } from 'react';
+import { useRef, useState, useCallback, useEffect, Children, type PropsWithChildren } from 'react';
+import type { KeyboardEvent, ReactElement } from 'react';
 import {
   Button,
   Card,
@@ -21,42 +21,13 @@ type PegaExtensionsSearchLayoutProps = {
   searchButtonLabel?: string;
   resetButtonLabel?: string;
   layoutDirection?: 'vertical' | 'horizontal';
-  searchFieldPane?: any[];
-  resultsPane?: any[];
   getPConnect: any;
 };
-
-// ─── Authoring guard ──────────────────────────────────────────────────────────
-
-function isAuthoringMode(getPConnect: any): boolean {
-  try {
-    return getPConnect().getComponentName?.() === 'AUTHORING';
-  } catch {
-    return false;
-  }
-}
-
-// ─── Slot renderer ────────────────────────────────────────────────────────────
-
-function renderSlot(
-  slot: any[],
-  getPConnect: any
-): (JSX.Element | null)[] | null {
-  if (!slot?.length) return null;
-  return slot.map((child: any, idx: number) => {
-    const C = getPConnect()
-      .getComponentsRegistry()
-      .getComponent(child.type);
-    if (!C) return null;
-    const childPConn = getPConnect().createComponent(child, idx, slot.length);
-    return <C key={child.id ?? idx} getPConnect={childPConn} />;
-  });
-}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function PegaExtensionsSearchLayout(
-  props: PegaExtensionsSearchLayoutProps
+  props: PropsWithChildren<PegaExtensionsSearchLayoutProps>
 ) {
   const {
     searchPaneTitle = 'Search Criteria',
@@ -64,24 +35,29 @@ export default function PegaExtensionsSearchLayout(
     searchButtonLabel = 'Search',
     resetButtonLabel = 'Reset',
     layoutDirection = 'vertical',
-    searchFieldPane = [],
-    resultsPane = [],
-    getPConnect
+    children
   } = props;
 
+  // Constellation passes each CONTENTPICKER slot as a child in config order:
+  // children[0] = searchFieldPane, children[1] = resultsPane
+  const childArray = Children.toArray(children) as ReactElement[];
+  const searchFieldPaneChild = childArray[0] ?? null;
+  const resultsPaneChild = childArray[1] ?? null;
+
+  // ── Resize state (vertical mode) ──
   const containerRef = useRef<HTMLDivElement>(null);
   const [splitPercent, setSplitPercent] = useState(30);
   const isDragging = useRef(false);
 
+  // ── Collapse state (horizontal mode) ──
   const [searchCollapsed, setSearchCollapsed] = useState(false);
   const [resultsCollapsed, setResultsCollapsed] = useState(false);
 
+  // ── Keys to force re-mount on reset/search ──
   const [searchKey, setSearchKey] = useState(0);
   const [resultsKey, setResultsKey] = useState(0);
 
-  const authoring = isAuthoringMode(getPConnect);
-
-  // ── Resize ────────────────────────────────────────────────────────────
+  // ── Resize handlers ───────────────────────────────────────────────────
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -134,21 +110,14 @@ export default function PegaExtensionsSearchLayout(
 
   const handleSearch = useCallback(() => {
     setResultsKey(k => k + 1);
-    try {
-      getPConnect()
-        .getActionsApi()
-        ?.triggerFieldChange?.('searchTriggered', true);
-    } catch {
-      // no-op in Storybook / authoring
-    }
-  }, [getPConnect]);
+  }, []);
 
   const handleReset = useCallback(() => {
     setSearchKey(k => k + 1);
     setResultsKey(k => k + 1);
   }, []);
 
-  // ── Shared: collapse action buttons for CardHeader ────────────────────
+  // ── Collapse buttons for CardHeader actions ───────────────────────────
 
   const searchCollapseAction = layoutDirection === 'horizontal' ? (
     <StyledCaretButton
@@ -174,66 +143,7 @@ export default function PegaExtensionsSearchLayout(
     </StyledCaretButton>
   ) : undefined;
 
-  // ── Authoring placeholder ─────────────────────────────────────────────
-
-  if (authoring) {
-    return (
-      <StyledSearchLayoutWrapper>
-        <StyledLayoutContainer $direction={layoutDirection} ref={containerRef}>
-          <Card
-            style={{
-              width: layoutDirection === 'vertical' ? `${splitPercent}%` : '100%',
-              minWidth: layoutDirection === 'vertical' ? '200px' : undefined,
-              flexShrink: 0
-            }}
-          >
-            <CardHeader>{searchPaneTitle}</CardHeader>
-            <CardContent>
-              <span style={{ color: '#888', fontSize: '0.875rem' }}>
-                Drop fields, views, or widgets here
-              </span>
-            </CardContent>
-            <CardFooter justify='end'>
-              <Button variant='secondary'>{resetButtonLabel}</Button>
-              <Button variant='primary'>{searchButtonLabel}</Button>
-            </CardFooter>
-          </Card>
-
-          {layoutDirection === 'vertical' && (
-            <StyledResizeHandle
-              role='separator'
-              aria-orientation='vertical'
-              aria-label='Drag to resize panes'
-              aria-valuenow={splitPercent}
-              aria-valuemin={20}
-              aria-valuemax={70}
-              tabIndex={0}
-              onKeyDown={onHandleKeyDown}
-            />
-          )}
-
-          <Card
-            style={{
-              flex: layoutDirection === 'vertical' ? '1 1 auto' : undefined,
-              width: layoutDirection === 'vertical'
-                ? `${100 - splitPercent}%`
-                : '100%',
-              minWidth: 0
-            }}
-          >
-            <CardHeader>{resultsPaneTitle}</CardHeader>
-            <CardContent>
-              <span style={{ color: '#888', fontSize: '0.875rem' }}>
-                Drop a view here
-              </span>
-            </CardContent>
-          </Card>
-        </StyledLayoutContainer>
-      </StyledSearchLayoutWrapper>
-    );
-  }
-
-  // ── Runtime render ────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────
 
   return (
     <StyledSearchLayoutWrapper>
@@ -244,12 +154,14 @@ export default function PegaExtensionsSearchLayout(
       >
         {/* Search Field Pane */}
         <Card
-style={{
+          style={{
             width: layoutDirection === 'vertical' ? `${splitPercent}%` : '100%',
             minWidth: layoutDirection === 'vertical' ? '200px' : undefined,
             flexShrink: layoutDirection === 'vertical' ? 0 : undefined,
             overflow: searchCollapsed ? 'hidden' : undefined,
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           <CardHeader actions={searchCollapseAction}>
@@ -269,7 +181,7 @@ style={{
               aria-labelledby='search-pane-heading'
               style={{ flex: '1 1 auto' }}
             >
-              {renderSlot(searchFieldPane, getPConnect)}
+              {searchFieldPaneChild}
             </CardContent>
           )}
 
@@ -310,11 +222,9 @@ style={{
 
         {/* Results Pane */}
         <Card
-style={{
+          style={{
             flex: layoutDirection === 'vertical' ? '1 1 auto' : undefined,
-            width: layoutDirection === 'vertical'
-              ? `${100 - splitPercent}%`
-              : '100%',
+            width: layoutDirection === 'vertical' ? `${100 - splitPercent}%` : '100%',
             minWidth: 0,
             overflow: resultsCollapsed ? 'hidden' : undefined,
             boxSizing: 'border-box'
@@ -338,7 +248,7 @@ style={{
               aria-live='polite'
               aria-atomic='false'
             >
-              {renderSlot(resultsPane, getPConnect)}
+              {resultsPaneChild}
             </CardContent>
           )}
         </Card>
