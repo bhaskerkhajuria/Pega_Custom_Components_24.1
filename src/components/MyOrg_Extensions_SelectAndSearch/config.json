@@ -1,73 +1,67 @@
 {
   "name": "Pega_Extensions_SearchLayout",
   "label": "Search Layout",
-  "description": "Two-pane search layout: configurable search criteria pane (left/top) and results pane (right/bottom). Supports resizable vertical split and collapsible horizontal stacking.",
+  "description": "Two-pane search layout with configurable search criteria pane and results pane. Supports resizable vertical split and collapsible horizontal stacking.",
+  "organization": "Pega",
   "version": "1.0.0",
   "library": "Pega_Extensions",
-  "type": "Layout",
-  "subtype": "Page",
-  "allowedInPortal": ["portal", "mash-up"],
-  "slots": {
-    "searchFieldPane": {
+  "componentKey": "Pega_Extensions_SearchLayout",
+  "type": "Template",
+  "subtype": "PAGE",
+  "properties": [
+    {
+      "name": "searchFieldPane",
       "label": "Search Field Pane",
       "description": "Drop fields, views, and widgets that make up the search criteria form.",
-      "allowedTypes": ["Field", "View", "Widget"],
-      "isRepeating": true,
-      "required": false
+      "format": "CONTENTPICKER",
+      "addTypeList": ["Fields", "Views", "Widgets"]
     },
-    "resultsPane": {
+    {
+      "name": "resultsPane",
       "label": "Results Pane",
-      "description": "Drop a view that renders the search results (e.g. a List view or Report).",
-      "allowedTypes": ["View"],
-      "isRepeating": false,
-      "required": false
-    }
-  },
-  "properties": [
+      "description": "Drop a view that renders the search results.",
+      "format": "CONTENTPICKER",
+      "addTypeList": ["Views"]
+    },
     {
       "name": "searchPaneTitle",
       "label": "Search Pane Title",
       "description": "Header text shown above the search criteria fields.",
-      "type": "Text",
+      "format": "TEXT",
       "defaultValue": "Search Criteria"
     },
     {
       "name": "resultsPaneTitle",
       "label": "Results Pane Title",
       "description": "Header text shown above the results view.",
-      "type": "Text",
+      "format": "TEXT",
       "defaultValue": "Search Results"
     },
     {
       "name": "searchButtonLabel",
       "label": "Search Button Label",
       "description": "Label for the search / submit button.",
-      "type": "Text",
+      "format": "TEXT",
       "defaultValue": "Search"
     },
     {
       "name": "resetButtonLabel",
       "label": "Reset Button Label",
       "description": "Label for the reset / clear button.",
-      "type": "Text",
+      "format": "TEXT",
       "defaultValue": "Reset"
     },
     {
       "name": "layoutDirection",
       "label": "Layout Direction",
-      "description": "Vertical: side-by-side split (resizable, 30/70 default). Horizontal: stacked top-to-bottom (collapsible, content-height).",
-      "type": "Text",
+      "description": "Vertical: side-by-side split (resizable). Horizontal: stacked top-to-bottom (collapsible).",
+      "format": "PICKLIST",
       "defaultValue": "vertical",
-      "enum": [
-        {
-          "key": "vertical",
-          "value": "Vertical (side-by-side)"
-        },
-        {
-          "key": "horizontal",
-          "value": "Horizontal (stacked)"
-        }
+      "options": [
+        { "key": "vertical", "value": "Vertical (side-by-side)" },
+        { "key": "horizontal", "value": "Horizontal (stacked)" }
       ]
     }
-  ]
+  ],
+  "defaultConfig": {}
 }
