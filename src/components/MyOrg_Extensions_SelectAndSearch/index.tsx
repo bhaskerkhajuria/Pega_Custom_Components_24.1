@@ -142,13 +142,29 @@ export default function PegaExtensionsSearchLayout(
       searchPaneChildren.forEach((childObj: { getPConnect: () => any }) => {
         try {
           const childPConn = childObj.getPConnect();
-          const configProps = childPConn.getConfigProps() as any;
 
-          // Text fields and Picklists both expose their bound property via configProps.value
-          const fieldRef: string | undefined = configProps?.value;
-          if (fieldRef && typeof fieldRef === 'string' && fieldRef.startsWith('.')) {
-            actionsApi.updateFieldValue(fieldRef, '');
-          }
+          // getStateProps() returns { propName: resolvedValue } for all
+          // state-bound props — the keys are the actual property references
+          const stateProps = childPConn.getStateProps() as Record<string, any>;
+          Object.keys(stateProps).forEach((propKey: string) => {
+            // 'value' is the state prop key that holds the field binding
+            if (propKey === 'value') {
+              const propRef = childPConn.getConfigProps()?.reference
+                ?? childPConn.getConfigProps()?.fieldMetadata?.propPath
+                ?? null;
+
+              // Fall back to reading the raw metadata property path
+              const rawRef = (childPConn.getRawMetadata?.() as any)?.config?.value;
+
+              const refToUse: string | null = propRef ?? rawRef ?? null;
+              if (refToUse && typeof refToUse === 'string' && refToUse.includes('.')) {
+                // Strip Pega expression wrappers like "@P " if present
+                const cleanRef = refToUse.replace(/^@P[\s]+/u, '').trim();
+                console.log('[SearchLayout] clearing:', cleanRef);
+                actionsApi.updateFieldValue(cleanRef, '');
+              }
+            }
+          });
         } catch {
           // skip unresolvable children
         }
