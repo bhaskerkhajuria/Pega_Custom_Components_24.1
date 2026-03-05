@@ -160,7 +160,6 @@ export default function PegaExtensionsSearchLayout(
               if (refToUse && typeof refToUse === 'string' && refToUse.includes('.')) {
                 // Strip Pega expression wrappers like "@P " if present
                 const cleanRef = refToUse.replace(/^@P[\s]+/u, '').trim();
-                console.log('[SearchLayout] clearing:', cleanRef);
                 actionsApi.updateFieldValue(cleanRef, '');
               }
             }
