@@ -259,7 +259,9 @@ export default function PegaExtensionsSearchLayout(
             width: layoutDirection === 'vertical' ? `${100 - splitPercent}%` : '100%',
             minWidth: 0,
             overflow: resultsCollapsed ? 'hidden' : undefined,
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           <CardHeader actions={resultsCollapseAction}>
@@ -284,10 +286,8 @@ export default function PegaExtensionsSearchLayout(
           )}
 
           {!resultsCollapsed && !searchTriggered && (
-            <CardContent>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '120px' }}>
-                <span style={{ color: '#888', fontSize: '0.875rem' }}>{resultsPlaceholder}</span>
-              </div>
+            <CardContent style={{ flex: '1 1 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#888', fontSize: '0.875rem' }}>{resultsPlaceholder}</span>
             </CardContent>
           )}
         </Card>
