@@ -130,23 +130,37 @@ export default function PegaExtensionsSearchLayout(
       const pConn = getPConnect();
       const context = pConn.getContextName();
       const pageRef = pConn.getPageReference();
+      const actionsApi = pConn.getActionsApi();
 
-      // Get all field metadata from the search pane's view and clear each value
-      const rawMeta = pConn.getRawMetadata?.() as any;
-      const searchFields: any[] = rawMeta?.config?.searchFieldPane ?? [];
-      searchFields.forEach((field: any) => {
-        if (field?.config?.value) {
-          pConn.getActionsApi().updateFieldValue(field.config.value, '', { context, pageReference: pageRef });
+      // Walk all children of the template pConnect.
+      // The first child is the searchFieldPane region — walk its children
+      // to find each field and clear its value.
+      const templateChildren: { getPConnect: () => any }[] = pConn.getChildren() ?? [];
+      const searchPaneChildren: { getPConnect: () => any }[] =
+        templateChildren[0]?.getPConnect().getChildren() ?? [];
+
+      searchPaneChildren.forEach((childObj: { getPConnect: () => any }) => {
+        try {
+          const childPConn = childObj.getPConnect();
+          const configProps = childPConn.getConfigProps() as any;
+
+          // Text fields and Picklists both expose their bound property via configProps.value
+          const fieldRef: string | undefined = configProps?.value;
+          if (fieldRef && typeof fieldRef === 'string' && fieldRef.startsWith('.')) {
+            actionsApi.updateFieldValue(fieldRef, '');
+          }
+        } catch {
+          // skip unresolvable children
         }
       });
 
-      // Trigger refresh to update the UI with cleared values
+      // Trigger UI refresh so cleared values render
       PCore.getRefreshManager().triggerRefreshForType('PROP_CHANGE', pageRef, context);
     } catch {
       // no-op in Storybook
     }
 
-    // Also hide results until Search is clicked again
+    // Hide results until Search is clicked again
     setSearchTriggered(false);
   }, [getPConnect]);
 
