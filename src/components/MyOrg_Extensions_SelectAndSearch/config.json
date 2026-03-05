@@ -10,20 +10,6 @@
   "subtype": "PAGE",
   "properties": [
     {
-      "name": "searchFieldPane",
-      "label": "Search Field Pane",
-      "description": "Drop fields, views, and widgets that make up the search criteria form.",
-      "format": "CONTENTPICKER",
-      "addTypeList": ["Fields", "Views", "Widgets"]
-    },
-    {
-      "name": "resultsPane",
-      "label": "Results Pane",
-      "description": "Drop a view that renders the search results.",
-      "format": "CONTENTPICKER",
-      "addTypeList": ["Views"]
-    },
-    {
       "name": "searchPaneTitle",
       "label": "Search Pane Title",
       "description": "Header text shown above the search criteria fields.",
@@ -58,8 +44,41 @@
       "format": "SELECT",
       "defaultValue": "vertical",
       "source": [
-        { "key": "vertical", "value": "Vertical (side-by-side)" },
-        { "key": "horizontal", "value": "Horizontal (stacked)" }
+        {
+          "key": "vertical",
+          "value": "Vertical (side-by-side)"
+        },
+        {
+          "key": "horizontal",
+          "value": "Horizontal (stacked)"
+        }
+      ]
+    },
+    {
+      "name": "resultsPlaceholder",
+      "label": "Results Placeholder Text",
+      "description": "Text shown in the results pane before the user clicks Search.",
+      "format": "TEXT",
+      "defaultValue": "Enter search criteria and click Search."
+    },
+    {
+      "name": "searchFieldPane",
+      "label": "Search Field Pane",
+      "description": "Drop fields, views, and widgets that make up the search criteria form.",
+      "format": "CONTENTPICKER",
+      "addTypeList": [
+        "Fields",
+        "Views",
+        "Widgets"
+      ]
+    },
+    {
+      "name": "resultsPane",
+      "label": "Results Pane",
+      "description": "Drop a view that renders the search results.",
+      "format": "CONTENTPICKER",
+      "addTypeList": [
+        "Views"
       ]
     }
   ],
