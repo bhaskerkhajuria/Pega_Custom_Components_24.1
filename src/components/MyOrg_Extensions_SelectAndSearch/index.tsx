@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect, Children, type PropsWithChildren } from 'react';
 import type { KeyboardEvent, ReactElement } from 'react';
+import type { PConnProps } from './PConnProps';
 import {
   Button,
   Card,
@@ -10,20 +11,19 @@ import {
 import StyledSearchLayoutWrapper, {
   StyledLayoutContainer,
   StyledResizeHandle,
-  StyledCaretButton
+  StyledCaretButton,
 } from './styles';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type PegaExtensionsSearchLayoutProps = {
+interface PegaExtensionsSearchLayoutProps extends PConnProps {
   searchPaneTitle?: string;
   resultsPaneTitle?: string;
   searchButtonLabel?: string;
   resetButtonLabel?: string;
   layoutDirection?: 'vertical' | 'horizontal';
   resultsPlaceholder?: string;
-  getPConnect: any;
-};
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
