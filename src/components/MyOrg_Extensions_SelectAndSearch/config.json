@@ -55,6 +55,27 @@
       ]
     },
     {
+      "name": "searchColumns",
+      "label": "Search Pane Layout",
+      "description": "Number of columns for the search criteria fields.",
+      "format": "SELECT",
+      "defaultValue": "3",
+      "source": [
+        {
+          "key": "1",
+          "value": "1 Column"
+        },
+        {
+          "key": "2",
+          "value": "2 Columns"
+        },
+        {
+          "key": "3",
+          "value": "3 Columns"
+        }
+      ]
+    },
+    {
       "name": "resultsPlaceholder",
       "label": "Results Placeholder Text",
       "description": "Text shown in the results pane before the user clicks Search.",
@@ -69,7 +90,7 @@
       "addTypeList": [
         "Fields",
         "Views",
-        "Widgets"
+        "UIComponents"
       ]
     },
     {
@@ -82,5 +103,6 @@
       ]
     }
   ],
-  "defaultConfig": {}
+  "defaultConfig": {},
+  "icon": "SearchLayout.svg"
 }
