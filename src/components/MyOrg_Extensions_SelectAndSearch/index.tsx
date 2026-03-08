@@ -1,17 +1,14 @@
+// Pega Infinity 24.1 — Pega_Extensions_SearchLayout
+
 import { useRef, useState, useCallback, useEffect, Children, type PropsWithChildren } from 'react';
 import type { KeyboardEvent, ReactElement } from 'react';
 import type { PConnProps } from './PConnProps';
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardContent,
-  CardFooter
-} from '@pega/cosmos-react-core';
+import { Button, Card, CardHeader, CardContent, CardFooter } from '@pega/cosmos-react-core';
 import StyledSearchLayoutWrapper, {
   StyledLayoutContainer,
   StyledResizeHandle,
   StyledCaretButton,
+  StyledSearchFieldsGrid
 } from './styles';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -22,6 +19,7 @@ interface PegaExtensionsSearchLayoutProps extends PConnProps {
   searchButtonLabel?: string;
   resetButtonLabel?: string;
   layoutDirection?: 'vertical' | 'horizontal';
+  searchColumns?: '1' | '2' | '3';
   resultsPlaceholder?: string;
 }
 
@@ -36,6 +34,7 @@ export default function PegaExtensionsSearchLayout(
     searchButtonLabel = 'Search',
     resetButtonLabel = 'Reset',
     layoutDirection = 'vertical',
+    searchColumns = '3',
     resultsPlaceholder = 'Enter search criteria and click Search.',
     getPConnect,
     children
@@ -149,9 +148,10 @@ export default function PegaExtensionsSearchLayout(
           Object.keys(stateProps).forEach((propKey: string) => {
             // 'value' is the state prop key that holds the field binding
             if (propKey === 'value') {
-              const propRef = childPConn.getConfigProps()?.reference
-                ?? childPConn.getConfigProps()?.fieldMetadata?.propPath
-                ?? null;
+              const propRef =
+                childPConn.getConfigProps()?.reference ??
+                childPConn.getConfigProps()?.fieldMetadata?.propPath ??
+                null;
 
               // Fall back to reading the raw metadata property path
               const rawRef = (childPConn.getRawMetadata?.() as any)?.config?.value;
@@ -181,29 +181,33 @@ export default function PegaExtensionsSearchLayout(
 
   // ── Collapse buttons ──────────────────────────────────────────────────
 
-  const searchCollapseAction = layoutDirection === 'horizontal' ? (
-    <StyledCaretButton
-      variant='simple'
-      aria-expanded={!searchCollapsed}
-      aria-controls='search-pane-content'
-      aria-label={searchCollapsed ? `Expand ${searchPaneTitle}` : `Collapse ${searchPaneTitle}`}
-      onClick={() => setSearchCollapsed(c => !c)}
-    >
-      {searchCollapsed ? '▼' : '▲'}
-    </StyledCaretButton>
-  ) : undefined;
+  const searchCollapseAction =
+    layoutDirection === 'horizontal' ? (
+      <StyledCaretButton
+        variant='simple'
+        aria-expanded={!searchCollapsed}
+        aria-controls='search-pane-content'
+        aria-label={searchCollapsed ? `Expand ${searchPaneTitle}` : `Collapse ${searchPaneTitle}`}
+        onClick={() => setSearchCollapsed(c => !c)}
+      >
+        {searchCollapsed ? '▼' : '▲'}
+      </StyledCaretButton>
+    ) : undefined;
 
-  const resultsCollapseAction = layoutDirection === 'horizontal' ? (
-    <StyledCaretButton
-      variant='simple'
-      aria-expanded={!resultsCollapsed}
-      aria-controls='results-pane-content'
-      aria-label={resultsCollapsed ? `Expand ${resultsPaneTitle}` : `Collapse ${resultsPaneTitle}`}
-      onClick={() => setResultsCollapsed(c => !c)}
-    >
-      {resultsCollapsed ? '▼' : '▲'}
-    </StyledCaretButton>
-  ) : undefined;
+  const resultsCollapseAction =
+    layoutDirection === 'horizontal' ? (
+      <StyledCaretButton
+        variant='simple'
+        aria-expanded={!resultsCollapsed}
+        aria-controls='results-pane-content'
+        aria-label={
+          resultsCollapsed ? `Expand ${resultsPaneTitle}` : `Collapse ${resultsPaneTitle}`
+        }
+        onClick={() => setResultsCollapsed(c => !c)}
+      >
+        {resultsCollapsed ? '▼' : '▲'}
+      </StyledCaretButton>
+    ) : undefined;
 
   // ── Render ────────────────────────────────────────────────────────────
 
@@ -240,26 +244,19 @@ export default function PegaExtensionsSearchLayout(
               id='search-pane-content'
               role='region'
               aria-labelledby='search-pane-heading'
-              style={{ flex: '1 1 auto' }}
             >
-              {searchFieldPaneChild}
+              <StyledSearchFieldsGrid $columns={Number(searchColumns)}>
+                {searchFieldPaneChild}
+              </StyledSearchFieldsGrid>
             </CardContent>
           )}
 
           {!searchCollapsed && (
             <CardFooter justify='end'>
-              <Button
-                variant='secondary'
-                onClick={handleReset}
-                aria-label={resetButtonLabel}
-              >
+              <Button variant='secondary' onClick={handleReset} aria-label={resetButtonLabel}>
                 {resetButtonLabel}
               </Button>
-              <Button
-                variant='primary'
-                onClick={handleSearch}
-                aria-label={searchButtonLabel}
-              >
+              <Button variant='primary' onClick={handleSearch} aria-label={searchButtonLabel}>
                 {searchButtonLabel}
               </Button>
             </CardFooter>
@@ -315,7 +312,14 @@ export default function PegaExtensionsSearchLayout(
           )}
 
           {!resultsCollapsed && !searchTriggered && (
-            <CardContent style={{ flex: '1 1 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CardContent
+              style={{
+                flex: '1 1 auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
               <span style={{ color: '#888', fontSize: '0.875rem' }}>{resultsPlaceholder}</span>
             </CardContent>
           )}
