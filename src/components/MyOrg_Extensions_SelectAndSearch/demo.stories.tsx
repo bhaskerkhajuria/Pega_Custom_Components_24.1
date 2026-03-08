@@ -1,11 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import PegaExtensionsSearchLayout from './index';
-import {
-  mockVertical,
-  mockHorizontal,
-  mockAuthoring,
-  mockCustomLabels
-} from './mock';
+import { mockVertical, mockHorizontal, mockAuthoring, mockCustomLabels } from './mock';
 
 const meta: Meta<typeof PegaExtensionsSearchLayout> = {
   title: 'Pega Extensions/Search Layout',
