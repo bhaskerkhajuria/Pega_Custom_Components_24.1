@@ -1,3 +1,5 @@
+// Pega Infinity 24.1 — Pega_Extensions_SearchLayout styles
+
 import styled, { css } from 'styled-components';
 import { Button } from '@pega/cosmos-react-core';
 
@@ -36,13 +38,14 @@ export const StyledLayoutContainer = styled.div<{
   @media (max-width: 480px) {
     flex-direction: column;
     gap: 1rem;
+    align-items: stretch;
   }
 `;
 
 // ─── Resize handle (vertical mode only) ──────────────────────────────────────
 
 export const StyledResizeHandle = styled.div`
-  width: 7px;
+  width: 20px;
   flex-shrink: 0;
   cursor: col-resize;
   position: relative;
@@ -61,7 +64,9 @@ export const StyledResizeHandle = styled.div`
     height: 48px;
     border-radius: 4px;
     background: var(--app-border-color, #d0d0d0);
-    transition: background 0.15s, height 0.15s;
+    transition:
+      background 0.15s,
+      height 0.15s;
   }
 
   /* Dots on the grip */
@@ -94,6 +99,24 @@ export const StyledResizeHandle = styled.div`
 
   @media (max-width: 480px) {
     display: none;
+  }
+`;
+
+// ─── Search fields grid ───────────────────────────────────────────────────────
+
+export const StyledSearchFieldsGrid = styled.div<{ $columns: number }>`
+  display: grid;
+  grid-template-columns: repeat(${({ $columns }) => $columns}, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  width: 100%;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(${({ $columns }) => Math.min($columns, 2)}, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
   }
 `;
 
