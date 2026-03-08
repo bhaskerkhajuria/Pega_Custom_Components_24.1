@@ -1,21 +1,33 @@
+// Pega Infinity 24.1 — Storybook mock factories
+
 // ─── Mock factories for Storybook ─────────────────────────────────────────────
 
 function buildBasePConnect(overrides: Record<string, unknown> = {}) {
-  return () => ({
+  // Cast to any — the mock only implements the subset of C11nEnv methods
+  // that this component actually calls. Full C11nEnv has 121+ methods
+  // which are unnecessary to mock for Storybook stories.
+  return (() => ({
     getComponentName: () => '',
     getContextName: () => 'primary',
     getPageReference: () => '.SearchPage',
     getActionsApi: () => ({
       triggerFieldChange: () => {
-        // no-op
+        /* no-op */
+      },
+      updateFieldValue: () => {
+        /* no-op */
       }
     }),
+    getChildren: () => [],
+    getStateProps: () => ({}),
+    getConfigProps: () => ({}),
+    getRawMetadata: () => ({}),
     getComponentsRegistry: () => ({
       getComponent: () => null
     }),
     createComponent: () => () => null,
     ...overrides
-  });
+  })) as any;
 }
 
 export function mockVertical() {
@@ -25,8 +37,7 @@ export function mockVertical() {
     searchButtonLabel: 'Search',
     resetButtonLabel: 'Reset',
     layoutDirection: 'vertical' as const,
-    searchFieldPane: [],
-    resultsPane: [],
+    searchColumns: '3' as const,
     getPConnect: buildBasePConnect()
   };
 }
