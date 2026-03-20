@@ -45,7 +45,7 @@ export const StyledLayoutContainer = styled.div<{
 // ─── Resize handle (vertical mode only) ──────────────────────────────────────
 
 export const StyledResizeHandle = styled.div`
-  width: 20px;
+  width: 7px;
   flex-shrink: 0;
   cursor: col-resize;
   position: relative;
