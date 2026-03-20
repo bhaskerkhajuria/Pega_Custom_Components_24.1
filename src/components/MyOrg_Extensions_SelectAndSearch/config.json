@@ -6,37 +6,10 @@
   "version": "1.0.0",
   "library": "Pega_Extensions",
   "componentKey": "Pega_Extensions_SearchLayout",
+  "icon": "SearchLayout.svg",
   "type": "Template",
   "subtype": "PAGE",
-  "properties": [
-    {
-      "name": "searchPaneTitle",
-      "label": "Search Pane Title",
-      "description": "Header text shown above the search criteria fields.",
-      "format": "TEXT",
-      "defaultValue": "Search Criteria"
-    },
-    {
-      "name": "resultsPaneTitle",
-      "label": "Results Pane Title",
-      "description": "Header text shown above the results view.",
-      "format": "TEXT",
-      "defaultValue": "Search Results"
-    },
-    {
-      "name": "searchButtonLabel",
-      "label": "Search Button Label",
-      "description": "Label for the search / submit button.",
-      "format": "TEXT",
-      "defaultValue": "Search"
-    },
-    {
-      "name": "resetButtonLabel",
-      "label": "Reset Button Label",
-      "description": "Label for the reset / clear button.",
-      "format": "TEXT",
-      "defaultValue": "Reset"
-    },
+    "properties": [
     {
       "name": "layoutDirection",
       "label": "Layout Direction",
@@ -76,20 +49,20 @@
       ]
     },
     {
+      "name": "searchFieldPane",
+      "label": "Search Field Pane",
+      "description": "Drop fields that make up the search criteria form.",
+      "format": "CONTENTPICKER",
+      "addTypeList": [
+        "Fields"
+      ]
+    },
+    {
       "name": "resultsPlaceholder",
       "label": "Results Placeholder Text",
       "description": "Text shown in the results pane before the user clicks Search.",
       "format": "TEXT",
       "defaultValue": "Enter search criteria and click Search."
-    },
-    {
-      "name": "searchFieldPane",
-      "label": "Search Field Pane",
-      "description": "Drop fields, views, and widgets that make up the search criteria form.",
-      "format": "CONTENTPICKER",
-      "addTypeList": [
-        "Fields"
-      ]
     },
     {
       "name": "resultsPane",
@@ -99,8 +72,35 @@
       "addTypeList": [
         "Views"
       ]
+    },
+    {
+      "name": "searchPaneTitle",
+      "label": "Search Pane Title",
+      "description": "Header text shown above the search criteria fields.",
+      "format": "TEXT",
+      "defaultValue": "Search Criteria"
+    },
+    {
+      "name": "resultsPaneTitle",
+      "label": "Results Pane Title",
+      "description": "Header text shown above the results view.",
+      "format": "TEXT",
+      "defaultValue": "Search Results"
+    },
+    {
+      "name": "searchButtonLabel",
+      "label": "Search Button Label",
+      "description": "Label for the search / submit button.",
+      "format": "TEXT",
+      "defaultValue": "Search"
+    },
+    {
+      "name": "resetButtonLabel",
+      "label": "Reset Button Label",
+      "description": "Label for the reset / clear button.",
+      "format": "TEXT",
+      "defaultValue": "Reset"
     }
   ],
-  "defaultConfig": {},
-  "icon": "SearchLayout.svg"
+  "defaultConfig": {}
 }
