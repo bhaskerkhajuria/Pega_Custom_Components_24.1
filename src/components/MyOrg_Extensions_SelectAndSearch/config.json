@@ -88,9 +88,7 @@
       "description": "Drop fields, views, and widgets that make up the search criteria form.",
       "format": "CONTENTPICKER",
       "addTypeList": [
-        "Fields",
-        "Views",
-        "UIComponents"
+        "Fields"
       ]
     },
     {
