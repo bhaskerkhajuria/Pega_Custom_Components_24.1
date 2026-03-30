@@ -46,6 +46,19 @@ export default function PegaExtensionsSearchLayout(
   const searchFieldPaneChild = childArray[0] ?? null;
   const resultsPaneChild = childArray[1] ?? null;
 
+  // ─── Dirty flag cleanup on unmount ──────────────────────────────────────────
+  // When user navigates away with filled search fields, Pega shows an
+  // "unsaved changes" warning. clearChangedProperties() clears the dirty
+  // tracking object for this context so Pega sees no dirty fields on navigation.
+ 
+  useEffect(() => {
+    return () => {
+      const context = getPConnect().getContextName();
+      (window as any).PCore.getFormUtils().clearChangedProperties(context);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // ── Resize state (vertical mode) ──────────────────────────────────────
   const containerRef = useRef<HTMLDivElement>(null);
   const [splitPercent, setSplitPercent] = useState(30);
